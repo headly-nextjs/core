@@ -1,11 +1,23 @@
+// headly/pages/slug.tsx
 import { notFound } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
+import React, { JSX } from "react";
 import { CRMFactory } from "../classes/crm/CRMFactory";
-import { PageFields } from "../classes/crm/types";
+import type { PageFields } from "../classes/crm/types";
 import { RenderComponents } from "../components/RenderComponents";
-import React from "react";
+import type { UIComponentsMap } from "../components/ui";
+import { defaultUIMap } from "../components/ui";
+import { BlocksComponentsMap } from "@/components/blocks";
 
-
+export interface HeadlySlugProps {
+  params: Promise<{ slug: string[] }>;
+  searchParams: Promise<{ preview?: string; secret?: string }>;
+  overrides?: {
+    ui?: Partial<UIComponentsMap>;
+    // You can also support blocks overrides if needed.
+    blocks?: Partial<BlocksComponentsMap>; // Replace with your BlocksComponentsMap type if desired.
+  };
+}
 
 export async function generateStaticParams() {
   const crm = CRMFactory.getCRM();
@@ -62,37 +74,39 @@ export async function generateMetadata({
   };
 }
 
-export interface HeadlySlugProps {
-  
-    params: Promise<{ slug: string[] }>;
-    searchParams: Promise<{ preview?: string; secret?: string }>;
-  
-}
-
 export default async function HeadlySlug({
   params,
   searchParams,
-}: HeadlySlugProps) {
+  overrides,
+}: HeadlySlugProps): Promise<JSX.Element> {
   const crm = CRMFactory.getCRM();
-  const { preview, secret } = await Promise.resolve(searchParams);
-  const isPreview = preview === "true";
-  if (isPreview) {
-    noStore();
-  }
+  const sp = await Promise.resolve(
+    searchParams ?? { preview: "false", secret: "" }
+  );
+  const isPreview = sp.preview === "true";
+  if (isPreview) noStore();
   const { slug } = await Promise.resolve(params);
   const pageData = await crm.getBySlug<PageFields>(
     slug,
     3,
     isPreview,
-    secret || ""
+    sp.secret || ""
   );
-  if (!pageData) {
-    notFound();
-  }
+  if (!pageData) notFound();
+
+  // Merge default UI mapping with any overrides.
+  const uiMap: UIComponentsMap = { ...defaultUIMap, ...overrides?.ui };
 
   return (
     <main>
-      <RenderComponents components={pageData.fields.components} />
+      <uiMap.Container>
+        <uiMap.Wrapper>
+          <RenderComponents
+            components={pageData.fields.components}
+            overrides={overrides}
+          />
+        </uiMap.Wrapper>
+      </uiMap.Container>
     </main>
   );
 }

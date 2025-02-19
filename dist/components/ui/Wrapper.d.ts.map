@@ -1,0 +1,1 @@
+{"version":3,"file":"Wrapper.d.ts","sourceRoot":"","sources":["../../../src/components/ui/Wrapper.tsx"],"names":[],"mappings":"AAAA,OAAc,EAAE,SAAS,EAAE,MAAM,OAAO,CAAC;AAEzC,MAAM,WAAW,YAAY;IAC3B,QAAQ,EAAE,SAAS,CAAC;IACpB,SAAS,CAAC,EAAE,MAAM,CAAC;CACpB;AAED,MAAM,CAAC,OAAO,UAAU,OAAO,CAAC,EAAE,QAAQ,EAAE,SAAS,EAAE,EAAE,YAAY,2CAQpE"}

@@ -1,7 +1,8 @@
+// headly/components/blocks/CallToActionComponent.tsx
 import React from "react";
 import Link from "next/link";
-import Container from "../ui/Container";
-import Wrapper  from "headly/components/ui/Wrapper";
+import DefaultContainer, { ContainerProps } from "../ui/Container";
+import DefaultWrapper, { WrapperProps } from "../ui/Wrapper";
 
 export interface CallToActionComponentProps {
   post: {
@@ -17,11 +18,23 @@ export interface CallToActionComponentProps {
       linkText?: string;
     };
   };
+  // Optional UI overrides
+  ui?: {
+    Container?: React.ComponentType<ContainerProps>;
+    Wrapper?: React.ComponentType<WrapperProps>;
+  };
 }
 
-const CallToActionComponent: React.FC<CallToActionComponentProps> = ({ post }) => {
+const CallToActionComponent: React.FC<CallToActionComponentProps> = ({
+  post,
+  ui,
+}) => {
   const { fields } = post;
   if (!fields) return null;
+
+  // Use the override if provided; otherwise fall back to the default UI components.
+  const Container = ui?.Container ?? DefaultContainer;
+  const Wrapper = ui?.Wrapper ?? DefaultWrapper;
 
   return (
     <Container>

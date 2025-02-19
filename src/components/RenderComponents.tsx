@@ -1,15 +1,29 @@
 import React from "react";
-import { PageComponent } from "../classes/crm/types";
-import { componentsMap, ComponentType } from ".";
+import type { PageComponent } from "../classes/crm/types";
+import type { BlocksComponentsMap, BlockComponentType } from "./blocks";
+import { defaultBlocksMap } from "./blocks";
+import type { UIComponentsMap } from "./ui";
 
-// Helper function to render a single component.
-// It uses a generic key K to narrow the union type.
-function renderComponent<K extends ComponentType>(
+export interface Overrides {
+  ui?: Partial<UIComponentsMap>;
+  blocks?: Partial<BlocksComponentsMap>;
+}
+
+interface RenderComponentsProps {
+  components?: PageComponent[];
+  overrides?: Overrides;
+}
+
+// Helper function to render a single component, using the provided blocksMap and ui overrides.
+function renderComponent<K extends BlockComponentType>(
   component: PageComponent,
-  compType: K
+  compType: K,
+  blocksMap: BlocksComponentsMap,
+  uiOverrides?: Partial<UIComponentsMap>
 ) {
-  const Component = componentsMap[compType] as React.ComponentType<{
+  const Component = blocksMap[compType] as React.ComponentType<{
     post: Extract<PageComponent, { sys: { contentType: { sys: { id: K } } } }>;
+    ui?: Partial<UIComponentsMap>;
   }>;
   return (
     <Component
@@ -20,26 +34,38 @@ function renderComponent<K extends ComponentType>(
           { sys: { contentType: { sys: { id: K } } } }
         >
       }
+      ui={uiOverrides}
     />
   );
 }
 
-// Export a reusable component that iterates over an array of PageComponent entries
-// and renders each one based on its Contentful type.
-export const RenderComponents: React.FC<{ components?: PageComponent[] }> = ({
+export const RenderComponents: React.FC<RenderComponentsProps> = ({
   components,
+  overrides,
 }) => {
+  if (!components || components.length === 0) return null;
+
+  // Merge the default blocks mapping with any provided overrides.
+  const blocksMap: BlocksComponentsMap = {
+    ...defaultBlocksMap,
+    ...(overrides?.blocks || {}),
+  };
+
+  // Extract UI overrides (if any).
+  const uiOverrides = overrides?.ui;
+
   return (
     <>
-      {components?.map((component) => {
-        // Narrow the component type to one of our keys
-        const compType = component.sys.contentType.sys.id as ComponentType;
-        if (!componentsMap[compType]) {
-          console.log(`Missing component: ${compType}`)
+      {components.map((component) => {
+        const compType = component.sys.contentType.sys.id as BlockComponentType;
+        if (!blocksMap[compType]) {
+          console.log(`Missing component: ${compType}`);
           return null;
         }
-        return renderComponent(component, compType);
+        return renderComponent(component, compType, blocksMap, uiOverrides);
       })}
     </>
   );
 };
+
+export default RenderComponents;

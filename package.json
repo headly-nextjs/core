@@ -1,18 +1,42 @@
 {
   "name": "@headly/core",
-  "version": "1.0.0",
-  "description": "Core Headly base components and routing for Next.js apps",
+  "version": "0.1.0",
+  "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "prepare": "npm run build"
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./pages/slug": {
+      "import": "./dist/pages/slug.js",
+      "require": "./dist/pages/slug.js"
+    },
+    "./components/*": "./dist/components/*"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0",
-    "next": "^12.0.0 || ^13.0.0"
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+  "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@contentful/rich-text-react-renderer": "^16.0.1",
+    "contentful": "^11.5.0",
+    "next": "15.1.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.7",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
   }
 }
