@@ -1,0 +1,19 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+      "outDir": "dist",
+      "declaration": true,
+      "declarationMap": true,
+      "emitDeclarationOnly": false,
+      "sourceMap": true,
+      "module": "ESNext",
+      "target": "ES2017",
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "jsx": "react-jsx"
+    },
+    "include": ["headly/**/*"],
+    "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx"]
+  }
+  
