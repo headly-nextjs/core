@@ -19,7 +19,9 @@
     "dist"
   ],
   "scripts": {
-  "build": "tsc -p tsconfig.build.json"
+  "build": "tsc -p tsconfig.build.json",
+  "buildandpack": "npm run build && npm pack",
+  "production": "npm run buildandpack && npm publish --access public"
   },
   "dependencies": {
     "@contentful/rich-text-react-renderer": "^16.0.1",
