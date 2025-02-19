@@ -1,1 +1,0 @@
-{"version":3,"file":"RichTextComponent.js","sourceRoot":"","sources":["../../../src/components/blocks/RichTextComponent.tsx"],"names":[],"mappings":";AACA,OAAO,QAAQ,MAAM,gBAAgB,CAAC;AAgBtC,MAAM,iBAAiB,GAAqC,CAAC,EAAE,IAAI,EAAE,EAAE,EAAE;IACvE,OAAO,KAAC,QAAQ,IAAC,WAAW,EAAE,IAAI,CAAC,MAAM,CAAC,IAAI,GAAI,CAAC;AACrD,CAAC,CAAC;AAEF,eAAe,iBAAiB,CAAC"}

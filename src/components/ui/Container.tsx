@@ -12,7 +12,7 @@ export default function Container({
   return (
     <div
       className={`border-debug-dashed container mx-auto py-10 md:py-24 lg:px-20 print:py-0 print:px-0 ${className}`}
-    >545545
+    >
       {children}
     </div>
   );
