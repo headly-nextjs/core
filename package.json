@@ -1,26 +1,14 @@
 {
   "name": "@headly/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js"
-    },
-    "./pages/slug": {
-      "import": "./dist/pages/slug.js",
-      "require": "./dist/pages/slug.js"
-    },
-    "./components/*": "./dist/components/*"
-  },
-  "files": [
-    "dist"
-  ],
+  
   "scripts": {
-  "build": "tsc -p tsconfig.build.json",
-  "buildandpack": "npm run build && npm pack",
-  "production": "npm run buildandpack && npm publish --access public"
+    "start": "tsc -p tsconfig.build.json --watch",
+    "build": "tsc -p tsconfig.build.json",
+    "buildandpack": "npm run build && npm pack",
+    "production": "npm run buildandpack && npm publish --access public"
   },
   "dependencies": {
     "@contentful/rich-text-react-renderer": "^16.0.1",
