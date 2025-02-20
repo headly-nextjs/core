@@ -1,40 +1,35 @@
-// headly/components/blocks/CallToActionComponent.tsx
 import React from "react";
 import Link from "next/link";
-import DefaultContainer, { ContainerProps } from "../ui/Container";
-import DefaultWrapper, { WrapperProps } from "../ui/Wrapper";
+import { getUIComponents, UIComponentsMap } from "@headly/core/components/ui";
+
+export interface CallToActionComponentFields {
+  title?: string;
+  description?: string;
+  subDescription?: string;
+  link?: string;
+  linkText?: string;
+}
+
+export type CallToActionComponentEntry = {
+  sys: { id: string; contentType: { sys: { id: "callToActionComponent" } } };
+  fields: CallToActionComponentFields;
+};
 
 export interface CallToActionComponentProps {
-  post: {
-    sys: {
-      id: string;
-      contentType: { sys: { id: "callToActionComponent" } };
-    };
-    fields: {
-      title?: string;
-      description?: string;
-      subDescription?: string;
-      link?: string;
-      linkText?: string;
-    };
-  };
-  // Optional UI overrides
-  ui?: {
-    Container?: React.ComponentType<ContainerProps>;
-    Wrapper?: React.ComponentType<WrapperProps>;
-  };
+  post: CallToActionComponentEntry;
+  // Use the UIComponentsMap type for overrides
+  uiOverrides?: Partial<UIComponentsMap>;
 }
 
 const CallToActionComponent: React.FC<CallToActionComponentProps> = ({
   post,
-  ui,
+  uiOverrides,
 }) => {
   const { fields } = post;
   if (!fields) return null;
 
-  // Use the override if provided; otherwise fall back to the default UI components.
-  const Container = ui?.Container ?? DefaultContainer;
-  const Wrapper = ui?.Wrapper ?? DefaultWrapper;
+  // Use the centralized helper to merge defaults with any overrides.
+  const { Container, Wrapper } = getUIComponents(uiOverrides);
 
   return (
     <Container>

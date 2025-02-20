@@ -1,4 +1,20 @@
+import { CRMEntry } from "@/classes/crm/types";
 import React from "react";
+
+// HeaderCenter types
+export interface HeaderCenterComponentFields {
+  title?: string;
+  description?: string;
+  subDescription?: string;
+  buttonText?: string;
+  showEmailRequest?: boolean;
+  backgroundColor?: string;
+}
+
+export type HeaderCenterComponentEntry =
+  CRMEntry<HeaderCenterComponentFields> & {
+    sys: { id: string; contentType: { sys: { id: "headerCenterComponent" } } };
+  };
 
 export interface HeaderCenterComponentProps {
   post: {
@@ -17,7 +33,9 @@ export interface HeaderCenterComponentProps {
   };
 }
 
-const HeaderCenterComponent: React.FC<HeaderCenterComponentProps> = ({ post }) => {
+const HeaderCenterComponent: React.FC<HeaderCenterComponentProps> = ({
+  post,
+}) => {
   const { fields } = post;
   return (
     <div className={`border-debug ${fields.backgroundColor || ""}`}>

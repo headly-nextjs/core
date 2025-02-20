@@ -3,7 +3,6 @@
   "version": "0.1.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  
   "scripts": {
     "start": "tsc -p tsconfig.build.json --watch",
     "build": "tsc -p tsconfig.build.json",
@@ -15,7 +14,8 @@
     "contentful": "^11.5.0",
     "next": "15.1.7",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-markdown": "^9.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,101 +1,112 @@
-import Image from "next/image";
+// headly/pages/slug.tsx
+import { notFound } from "next/navigation";
+import { unstable_noStore as noStore } from "next/cache";
+import React, { JSX } from "react";
+import { CRMFactory } from "../classes/crm/CRMFactory";
+import type { PageFields } from "../classes/crm/types";
+import { RenderComponents } from "../components/RenderComponents";
+import type { UIComponentsMap } from "../components/ui";
+import { defaultUIMap } from "../components/ui";
+import { BlocksComponentsMap } from "@/components/blocks";
 
-export default function HeadlyHome() {
+export interface HeadlyPageProps {
+  params: Promise<{ slug: string[] }>;
+  searchParams: Promise<{ preview?: string; secret?: string }>;
+  overrides?: {
+    ui?: Partial<UIComponentsMap>;
+    // You can also support blocks overrides if needed.
+    blocks?: Partial<BlocksComponentsMap>; // Replace with your BlocksComponentsMap type if desired.
+  };
+}
+
+export async function generateStaticParams() {
+  const crm = CRMFactory.getCRM();
+  const pages = await crm.getPages<PageFields>();
+  return pages.map((page) => ({
+    slug: page.fields.slug.split("/"),
+  }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string[] }>;
+}) {
+  const { slug } = await params;
+  const crm = CRMFactory.getCRM();
+  const pageData = await crm.getBySlug<PageFields>(slug, 3, false, "");
+  if (!pageData) {
+    return {};
+  }
+  const seo = pageData.fields.seo.fields;
+  const ogImages =
+    seo.images?.map((img) => {
+      const fileUrl = img.fields.file.url;
+      const url = fileUrl.startsWith("//") ? "https:" + fileUrl : fileUrl;
+      return {
+        url,
+        alt: img.fields.title || "",
+        ...(img.fields.file.details.image && {
+          width: img.fields.file.details.image.width,
+          height: img.fields.file.details.image.height,
+        }),
+      };
+    }) || [];
+  return {
+    title: seo.pageTitle,
+    description: seo.pageDescription,
+    openGraph: {
+      title: seo.pageTitle,
+      description: seo.pageDescription,
+      url: `${process.env.SITE_URL}/${slug.join("/")}`,
+      images: ogImages,
+    },
+    robots: {
+      index: !seo.disableIndexing,
+      follow: true,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.pageTitle,
+      description: seo.pageDescription,
+      images: ogImages,
+    },
+  };
+}
+
+export default async function HeadlyPage({
+  params,
+  searchParams,
+  overrides,
+}: HeadlyPageProps): Promise<JSX.Element> {
+  const crm = CRMFactory.getCRM();
+  const sp = await Promise.resolve(
+    searchParams ?? { preview: "false", secret: "" }
+  );
+  const isPreview = sp.preview === "true";
+  if (isPreview) noStore();
+  const { slug } = await Promise.resolve(params);
+  const pageData = await crm.getBySlug<PageFields>(
+    slug,
+    3,
+    isPreview,
+    sp.secret || ""
+  );
+  if (!pageData) notFound();
+
+  // Merge default UI mapping with any overrides.
+  const uiMap: UIComponentsMap = { ...defaultUIMap, ...overrides?.ui };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+    <main>
+      <uiMap.Container>
+        <uiMap.Wrapper>
+          <RenderComponents
+            components={pageData.fields.components}
+            overrides={overrides}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        </uiMap.Wrapper>
+      </uiMap.Container>
+    </main>
   );
 }

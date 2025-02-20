@@ -1,7 +1,6 @@
 import React from "react";
-import type { PageComponent } from "../classes/crm/types";
-import type { BlocksComponentsMap, BlockComponentType } from "./blocks";
-import { defaultBlocksMap } from "./blocks";
+import type { BlocksComponentsMap, BlockComponentType, PageComponent } from "./blocks";
+import { blocks } from "./blocks";
 import type { UIComponentsMap } from "./ui";
 
 export interface Overrides {
@@ -47,7 +46,7 @@ export const RenderComponents: React.FC<RenderComponentsProps> = ({
 
   // Merge the default blocks mapping with any provided overrides.
   const blocksMap: BlocksComponentsMap = {
-    ...defaultBlocksMap,
+    ...blocks,
     ...(overrides?.blocks || {}),
   };
 
